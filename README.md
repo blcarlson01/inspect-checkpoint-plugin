@@ -1,10 +1,3 @@
-Below are two complete documents you can drop directly into your repo.
-
----
-
-# 📄 `README.md`
-
-````markdown
 # Inspect Checkpoint Plugin
 
 A production-ready checkpointing, resume, and observability plugin for Inspect AI.
