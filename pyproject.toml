@@ -1,0 +1,18 @@
+[project]
+name = "inspect-checkpoint-plugin"
+version = "0.2.0"
+description = "Checkpointing, resume, and monitoring for Inspect AI"
+authors = [{name = "Your Name"}]
+dependencies = [
+    "inspect-ai",
+    "fsspec",
+    "s3fs",
+    "streamlit",
+]
+
+[project.scripts]
+inspect-checkpoint-dashboard = "inspect_checkpoint_plugin.dashboard.app:main"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
