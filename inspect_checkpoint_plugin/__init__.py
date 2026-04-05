@@ -4,7 +4,7 @@ from .hooks import CheckpointHook
 
 def create_checkpoint_hook(
     interval_seconds: int = 900,
-    output_dir: str = None,
+    output_dir: str | None = None,
     enabled: bool = True,
     resume: bool = True,
 ) -> "CheckpointHook":

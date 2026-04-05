@@ -39,6 +39,7 @@ def test_merge_logs_single_log_returned_unchanged():
     log = MagicMock()
     log.samples = [{"id": 1}, {"id": 2}]
     result = merge_logs([log])
+    assert result is not None
     assert result is log
     assert result.samples == [{"id": 1}, {"id": 2}]
 
@@ -49,6 +50,7 @@ def test_merge_logs_combines_samples_from_two_logs():
     log2 = MagicMock()
     log2.samples = [{"id": 2}]
     result = merge_logs([log1, log2])
+    assert result is not None
     assert len(result.samples) == 2
     assert {"id": 1} in result.samples
     assert {"id": 2} in result.samples
@@ -62,6 +64,7 @@ def test_merge_logs_combines_samples_from_three_logs():
     log3 = MagicMock()
     log3.samples = [{"id": 4}, {"id": 5}]
     result = merge_logs([log1, log2, log3])
+    assert result is not None
     assert len(result.samples) == 5
 
 
@@ -71,6 +74,7 @@ def test_merge_logs_handles_none_samples():
     log2 = MagicMock()
     log2.samples = [{"id": 1}]
     result = merge_logs([log1, log2])
+    assert result is not None
     assert {"id": 1} in result.samples
 
 
@@ -80,6 +84,7 @@ def test_merge_logs_returns_first_log_as_base():
     log2 = MagicMock()
     log2.samples = [{"id": 2}]
     result = merge_logs([log1, log2])
+    assert result is not None
     assert result is log1
 
 
@@ -89,6 +94,7 @@ def test_merge_logs_both_none_samples_produces_empty_list():
     log2 = MagicMock()
     log2.samples = None
     result = merge_logs([log1, log2])
+    assert result is not None
     assert result.samples == []
 
 

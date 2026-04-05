@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, patch
+﻿from unittest.mock import MagicMock, patch
 
 from inspect_checkpoint_plugin.resume import find_latest_checkpoint, load_latest_checkpoint
 
@@ -11,11 +11,11 @@ def test_find_latest_checkpoint_returns_none_when_no_logs():
 
 def test_find_latest_checkpoint_returns_most_recent():
     log1 = MagicMock()
-    log1.last_modified = "2026-04-05T12:00:00"
+    log1.mtime = 1743854400.0  # 2026-04-05 12:00 UTC
     log2 = MagicMock()
-    log2.last_modified = "2026-04-05T13:00:00"
+    log2.mtime = 1743858000.0  # 2026-04-05 13:00 UTC  (latest)
     log3 = MagicMock()
-    log3.last_modified = "2026-04-05T11:00:00"
+    log3.mtime = 1743850800.0  # 2026-04-05 11:00 UTC
 
     with patch(
         "inspect_checkpoint_plugin.resume.list_eval_logs",
@@ -28,7 +28,7 @@ def test_find_latest_checkpoint_returns_most_recent():
 
 def test_find_latest_checkpoint_single_log():
     log = MagicMock()
-    log.last_modified = "2026-04-05T12:00:00"
+    log.mtime = 1743854400.0
 
     with patch(
         "inspect_checkpoint_plugin.resume.list_eval_logs", return_value=[log]
@@ -36,6 +36,21 @@ def test_find_latest_checkpoint_single_log():
         result = find_latest_checkpoint("s3://bucket/path")
 
     assert result is log
+
+
+def test_find_latest_checkpoint_handles_none_mtime():
+    log1 = MagicMock()
+    log1.mtime = None
+    log2 = MagicMock()
+    log2.mtime = 1743854400.0
+
+    with patch(
+        "inspect_checkpoint_plugin.resume.list_eval_logs",
+        return_value=[log1, log2],
+    ):
+        result = find_latest_checkpoint("s3://bucket/path")
+
+    assert result is log2
 
 
 def test_find_latest_checkpoint_passes_path():
@@ -56,7 +71,7 @@ def test_load_latest_checkpoint_returns_none_when_no_logs():
 
 def test_load_latest_checkpoint_returns_loaded_log():
     mock_entry = MagicMock()
-    mock_entry.location = "s3://bucket/path/checkpoint_20260405_120000.json.gz"
+    mock_entry.name = "s3://bucket/path/checkpoint_20260405_120000.json.gz"
     mock_loaded = MagicMock()
 
     with (
@@ -72,4 +87,4 @@ def test_load_latest_checkpoint_returns_loaded_log():
         result = load_latest_checkpoint("s3://bucket/path")
 
     assert result is mock_loaded
-    mock_read.assert_called_once_with(mock_entry.location)
+    mock_read.assert_called_once_with(mock_entry.name)

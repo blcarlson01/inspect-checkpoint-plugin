@@ -13,7 +13,7 @@ class CheckpointManager:
     def should_checkpoint(self) -> bool:
         return (time.time() - self.last_checkpoint_time) >= self.config.interval_seconds
 
-    def checkpoint(self, log, step: int = None):
+    def checkpoint(self, log, step: int | None = None):
         if not self.config.enabled:
             return
 

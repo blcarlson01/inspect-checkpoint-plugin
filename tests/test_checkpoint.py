@@ -5,15 +5,18 @@ from inspect_checkpoint_plugin.checkpoint import CheckpointManager
 from inspect_checkpoint_plugin.config import CheckpointConfig
 
 
-def _make_manager(**kwargs):
-    defaults = dict(
-        interval_seconds=900,
-        output_dir="s3://bucket/checkpoints",
-        enabled=True,
-        resume=True,
+def _make_manager(
+    interval_seconds: int = 900,
+    output_dir: str | None = "s3://bucket/checkpoints",
+    enabled: bool = True,
+    resume: bool = True,
+) -> CheckpointManager:
+    config = CheckpointConfig(
+        interval_seconds=interval_seconds,
+        output_dir=output_dir,
+        enabled=enabled,
+        resume=resume,
     )
-    defaults.update(kwargs)
-    config = CheckpointConfig(**defaults)
     return CheckpointManager(config)
 
 

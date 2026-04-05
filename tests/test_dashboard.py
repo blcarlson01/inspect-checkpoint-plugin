@@ -3,15 +3,15 @@
 # Import the module once so bindings are established before individual tests patch them
 from inspect_checkpoint_plugin.dashboard import app
 from inspect_checkpoint_plugin.dashboard.app import load_logs
-
+import streamlit as st  # type: ignore[import-untyped]
 
 def test_load_logs_returns_sorted_descending():
     log1 = MagicMock()
-    log1.last_modified = "2026-04-05T12:00:00"
+    log1.mtime = 1743854400.0
     log2 = MagicMock()
-    log2.last_modified = "2026-04-05T13:00:00"
+    log2.mtime = 1743858000.0
     log3 = MagicMock()
-    log3.last_modified = "2026-04-05T11:00:00"
+    log3.mtime = 1743850800.0
 
     with patch.object(app, "list_eval_logs", return_value=[log1, log2, log3]):
         result = load_logs("s3://bucket/path")
@@ -27,15 +27,14 @@ def test_load_logs_empty():
     assert result == []
 
 
-def test_main_with_logs_renders_metrics_and_samples():
-    import streamlit as st
+def test_main_with_logs_renders_metrics_and_samples():    
 
     mock_log = MagicMock()
     mock_log.results = {"accuracy": 0.9}
     mock_log.samples = [{"id": 1}, {"id": 2}]
 
     mock_entry = MagicMock()
-    mock_entry.location = "s3://bucket/path/checkpoint_20260405_120000.json.gz"
+    mock_entry.name = "s3://bucket/path/checkpoint_20260405_120000.json.gz"
 
     st.text_input.return_value = "s3://bucket/checkpoints"
     st.selectbox.return_value = mock_entry
@@ -51,7 +50,6 @@ def test_main_with_logs_renders_metrics_and_samples():
 
 
 def test_main_shows_warning_when_no_logs():
-    import streamlit as st
 
     st.text_input.return_value = "s3://bucket/checkpoints"
 
@@ -62,14 +60,13 @@ def test_main_shows_warning_when_no_logs():
 
 
 def test_main_truncates_samples_display_to_50():
-    import streamlit as st
 
     mock_log = MagicMock()
     mock_log.results = {}
     mock_log.samples = [{"id": i} for i in range(60)]
 
     mock_entry = MagicMock()
-    mock_entry.location = "s3://bucket/path/checkpoint_20260405_120000.json.gz"
+    mock_entry.name = "s3://bucket/path/checkpoint_20260405_120000.json.gz"
 
     st.text_input.return_value = "s3://bucket/checkpoints"
     st.selectbox.return_value = mock_entry

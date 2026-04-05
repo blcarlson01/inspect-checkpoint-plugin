@@ -1,11 +1,11 @@
-import streamlit as st
+import streamlit as st  # type: ignore[import-untyped]
 from inspect_ai.log import list_eval_logs, read_eval_log
 
 st.set_page_config(layout="wide")
 
 def load_logs(path):
     logs = list_eval_logs(path)
-    return sorted(logs, key=lambda x: x.last_modified, reverse=True)
+    return sorted(logs, key=lambda x: x.mtime or 0.0, reverse=True)
 
 
 def main():
@@ -24,10 +24,10 @@ def main():
     selected = st.selectbox(
         "Select checkpoint",
         logs,
-        format_func=lambda x: x.location.split("/")[-1]
+        format_func=lambda x: x.name.split("/")[-1]
     )
 
-    log = read_eval_log(selected.location)
+    log = read_eval_log(selected.name)
 
     # Metrics
     st.header("Metrics")
@@ -35,13 +35,13 @@ def main():
 
     # Samples
     st.header("Samples")
-    for sample in log.samples[:50]:
+    for sample in (log.samples or [])[:50]:
         st.write(sample)
 
     # Timeline
     st.header("Checkpoint Timeline")
     st.line_chart([
-        len(read_eval_log(entry.location).samples)
+        len(read_eval_log(entry.name).samples or [])
         for entry in logs[::-1]
     ])
 
